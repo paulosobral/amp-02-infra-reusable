@@ -38,10 +38,3 @@ For the development of new features, create a branch following the pattern: `fea
 When approving an automatically opened pull request, the `.github/apply-destroy-terraform.yml` action is triggered. Which checks whether terraform should be applied (contents of the `destroy.yml` file with the content `destroy: false`) or destroyed (contents of the `destroy.yml` file with the content `destroy: true`).
 
 ![image](https://img.shields.io/badge/GitHub-100000?style=for-the-badge&logo=github&logoColor=white) ![AWS](https://img.shields.io/badge/AWS-%23FF9900.svg?style=for-the-badge&logo=amazon-aws&logoColor=white) ![Terraform](https://img.shields.io/badge/terraform-%235835CC.svg?style=for-the-badge&logo=terraform&logoColor=white)
-
-## Documentation
-
-### Useful links:
-
-1. [Enabling route53 to manage Registro.br domain](https://medium.com/@sergioafonsojr/como-configurar-um-dom%C3%ADnio-com-br-no-registro-br-e-route-53-c971d97af63c);
-2. [How to Set Up @Zoho Mail on an AWS Route 53 Domain](https://www.youtube.com/watch?v=Y2bfzH4iBvg);
