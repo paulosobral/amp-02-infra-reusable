@@ -1,9 +1,12 @@
-name: "[Main] Terraform Apply or Destroy Branch Main"
-run-name: User ${{ github.actor }} is applying or destroying terraform on branch ${{ github.ref }}
+name: "Terraform Apply or Destroy Branch Main"
+
 on:
-  push:
-    branches:    
-      - main
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 jobs:
   terraform-apply-destroy:
     runs-on: ubuntu-latest
