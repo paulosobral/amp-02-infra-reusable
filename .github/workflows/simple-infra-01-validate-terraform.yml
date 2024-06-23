@@ -1,5 +1,5 @@
-name: "[Feature] Terraform Validate Feature Branch Pipeline"
-run-name: User ${{ github.actor }} is validating terraform on branch ${{ github.ref }}
+name: "Terraform Validate Feature Branch Pipeline"
+
 on:
   workflow_call:
     secrets:
