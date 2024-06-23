@@ -1,9 +1,12 @@
 name: "[Feature] Terraform Validate Feature Branch Pipeline"
 run-name: User ${{ github.actor }} is validating terraform on branch ${{ github.ref }}
 on:
-  push:
-    branches:    
-      - 'feature/**'
+  workflow_call:
+    secrets:
+      AWS_ACCESS_KEY_ID:
+        required: true
+      AWS_SECRET_ACCESS_KEY:
+        required: true
 jobs:
   terraform-validate:
     runs-on: ubuntu-latest
