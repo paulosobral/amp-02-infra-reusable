@@ -30,12 +30,47 @@ jobs:
         run: terraform validate
       - name: Terraform plan
         run: cd ${{ github.workspace }}/infra && terraform plan
-      - name: Pull-request branch to main
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: "main"
-          pr_title: "Pulling ${{ github.ref }} into master" 
-          pr_body: |                                        
-            :crown: *An automated PR*
+      # - name: Pull-request branch to main
+      #   uses: repo-sync/pull-request@v2
+      #   with:
+      #     destination_branch: "${{ inputs.PR_DESTINATION_BRANCH}}"
+      #     pr_title: "Pulling ${{ github.ref }} into ${{ inputs.PR_DESTINATION_BRANCH}}" 
+      #     pr_body: |                                        
+      #       :crown: *An automated PR*
 
-            _Created by [repo-sync/pull-request](https://github.com/repo-sync/pull-request)_
+      #       _Created by [repo-sync/pull-request](https://github.com/repo-sync/pull-request)_
+      - name: Set up Node.js
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Generate version
+        id: generate_version
+        run: |
+          npx semantic-release --dry-run --no-ci
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Get new version
+        id: new_version
+        run: echo "::set-output name=version::$(jq -r '.nextRelease.version' <.releaserc)"
+
+      - name: Open Pull Request
+        uses: actions/github-script@v3
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const version = '${{ steps.new_version.outputs.version }}';
+            const { data: pullRequest } = await github.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: `Release ${version}`,
+              head: `release-${version}`,
+              base: 'main',
+              body: `This PR introduces version ${version}.`,
+              draft: false
+            });
+            console.log(`Created Pull Request #${pullRequest.number}`);
