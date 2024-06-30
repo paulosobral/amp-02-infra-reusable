@@ -34,7 +34,8 @@ jobs:
         run: terraform validate
       - name: Terraform plan
         run: cd ${{ github.workspace }}/infra && terraform plan
-      - name: Pull-request branch to main
+        
+      - name: Pull-request branch to ${{ inputs.PR_DESTINATION_BRANCH}}
         uses: repo-sync/pull-request@v2
         with:
           destination_branch: "${{ inputs.PR_DESTINATION_BRANCH}}"
