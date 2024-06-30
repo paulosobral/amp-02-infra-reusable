@@ -2,10 +2,6 @@ name: "Terraform Apply or Destroy Branch Main"
 
 on:
   workflow_call:
-    inputs:
-      PR_DESTINATION_BRANCH:
-        type: string
-        required: true
     secrets:
       AWS_ACCESS_KEY_ID:
         required: true
@@ -34,20 +30,19 @@ jobs:
         run: terraform validate
       - name: Terraform plan
         run: cd ${{ github.workspace }}/infra && terraform plan
+      
       - name: Check Terraform apply or Terraform destroy
         run: |
           if grep 'destroy: true' ${{ github.workspace }}/infra/destroy.yml ; then
+            echo "DESTROY=true" >> $GITHUB_ENV
             cd ${{ github.workspace }}/infra && terraform destroy --auto-approve
           else
+            echo "DESTROY=false" >> $GITHUB_ENV
             cd ${{ github.workspace }}/infra && terraform apply --auto-approve
           fi
 
-      - name: "Pull-request branch to ${{ inputs.PR_DESTINATION_BRANCH}}"
-        uses: repo-sync/pull-request@v2
-        with:
-          destination_branch: "${{ inputs.PR_DESTINATION_BRANCH}}"
-          pr_title: "Pulling ${{ github.ref }} into ${{ inputs.PR_DESTINATION_BRANCH}}" 
-          pr_body: |                                        
-            :crown: *An automated PR*
+      - name: Conditional Step for destroy == false to test resources in cloud
+        if: env.DESTROY == 'false'
+        run: echo "This step runs only if DESTROY is true"
 
-            _Created by [repo-sync/pull-request](https://github.com/repo-sync/pull-request)_
+
