@@ -41,8 +41,29 @@ jobs:
             cd ${{ github.workspace }}/infra && terraform apply --auto-approve
           fi
 
-      - name: Conditional Step for destroy == false to test resources in cloud
+      - name: Set up Node.js
         if: env.DESTROY == 'false'
-        run: echo "This step runs only if DESTROY is true"
+        uses: actions/setup-node@v2
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        if: env.DESTROY == 'false'
+        run: cd ${{ github.workspace }}/tests && npm install
+  
+      - name: Run tests and Generate JUnit report
+        if: env.DESTROY == 'false'
+        run: cd ${{ github.workspace }}/tests && npm t
+        env:
+          CI: true
+      
+      - name: Check JUnit report
+        if: env.DESTROY == 'false'
+        uses: dorny/test-reporter@v1
+        with:
+          name: Jest tests
+          path: junit.xml
+          reporter: jest-junit
+
 
 
